@@ -1,5 +1,5 @@
 # ntd_script_python_v2:-
-### It will run only in Python version 2 Created by Ravi Chander Jha
+### It will run only in Python version 2 
 
 # ntd_script_python_v3:-
-### It can run on the latest version of Python update made by Sumit Kushwah
+### It can run on the latest version of Python 
