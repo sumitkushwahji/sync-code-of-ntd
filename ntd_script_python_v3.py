@@ -16,19 +16,36 @@ import time  # To unpack the packet sent back and to convert the seconds to a st
 """host = "time.nplindia.org"; # The server."""
 
 NTD_IP = [
-    "172.16.26.11",
-    "172.16.26.13",
-    "172.16.26.14",
+    # "172.16.26.11",
+    # "172.16.26.13",
+    "172.16.26.14",  ## inside main building
     "172.16.26.3",  ## outside main building
-    "172.16.26.4",  ## inside main building
+    # "172.16.26.4",
     "172.16.26.9",  ## outside head ist
-    "172.17.26.10",  ## Library
+    # "172.16.26.10",  ## Library
     "172.16.26.12",  ## Electrical section
     "172.16.26.7",  ## conference room metrology
-    "172.16.26.15",  ## TEC Building
-    "172.17.26.16",  ## Inside auditorium
-    "172.17.26.17",  ## Reception of auditorium
+    # "172.16.26.15",  ## TEC Building
+    "172.16.26.16",  ## Reception of auditorium
+    "172.16.26.17",  ## Inside auditorium
+    "172.16.26.10",  ## Room No 31
 ]
+# Map each IP to its location
+NTD_IP_LOCATIONS = {
+    # "172.16.26.11": "Location 1",
+    # "172.16.26.13": "Location 2",
+    "172.16.26.14": "Inside main building",
+    "172.16.26.3": "Outside main building",
+    # "172.16.26.4": "Location 3",
+    "172.16.26.9": "Outside head IST",
+    # "172.16.26.10": "Library",
+    "172.16.26.12": "Electrical section",
+    "172.16.26.7": "Conference room metrology",
+    # "172.16.26.15": "TEC Building",
+    "172.16.26.16": "Reception of auditoriumm",
+    "172.16.26.17": "Inside auditorium",
+    "172.16.26.10": "Room No 31",
+}
 
 log_file = "other_log.csv"
 
@@ -495,6 +512,10 @@ def send_time(host, data, server):
     global open_ntd_count, timestamp, var_log_file
 
     host_ip, server_port = host, 10000
+    location = NTD_IP_LOCATIONS.get(
+        host_ip, "Unknown Location"
+    )  # Get location based on IP
+
     # Initialize a TCP client socket using SOCK_STREAM
     tcp_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -506,28 +527,14 @@ def send_time(host, data, server):
         # Read data from the TCP server and close the connection
         received = tcp_client.recv(1024)
 
+        # Log success with location
         var_log_file.write(
-            str(datetime.datetime.now())
-            + ","
-            + time.ctime(timestamp - bias)
-            + ","
-            + host
-            + ",Synchronized"
-            + ","
-            + str(bias)
-            + "\r\n"
+            f"{datetime.datetime.now()},{time.ctime(timestamp - bias)},{host},Synchronized,{bias},{location}\r\n"
         )
     except Exception as e:
+        # Log failure with location
         var_log_file.write(
-            str(datetime.datetime.now())
-            + ","
-            + time.ctime(timestamp - bias)
-            + ","
-            + host
-            + ",Not Connected"
-            + ","
-            + str(bias)
-            + "\r\n"
+            f"{datetime.datetime.now()},{time.ctime(timestamp - bias)},{host},Not Connected,{bias},{location}\r\n"
         )
     finally:
         open_ntd_count -= 1
